@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline';" />
+  <title>ARIA — Personal AI Agent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Canvas for animated background -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- Main app shell -->
+  <div id="app">
+
+    <!-- Custom Titlebar -->
+    <div id="titlebar">
+      <div class="titlebar-left">
+        <div class="aria-logo">
+          <span class="logo-ring"></span>
+          <span class="logo-core"></span>
+        </div>
+        <span class="app-title">ARIA</span>
+        <span class="app-subtitle">Personal AI Agent</span>
+      </div>
+      <div class="titlebar-drag"></div>
+      <div class="titlebar-controls">
+        <button id="btn-minimize" title="Minimize">─</button>
+        <button id="btn-maximize" title="Maximize">□</button>
+        <button id="btn-close" title="Close">✕</button>
+      </div>
+    </div>
+
+    <!-- Layout: Sidebar + Main -->
+    <div id="layout">
+
+      <!-- Sidebar -->
+      <aside id="sidebar">
+        <div class="sidebar-section">
+          <div class="system-badge" id="system-badge">
+            <div class="status-dot pulse"></div>
+            <span id="status-text">Connecting...</span>
+          </div>
+        </div>
+
+        <div class="sidebar-section">
+          <p class="sidebar-label">QUICK ACTIONS</p>
+          <div class="quick-actions">
+            <button class="qa-btn" data-prompt="Open YouTube">
+              <span class="qa-icon">▶</span>YouTube
+            </button>
+            <button class="qa-btn" data-prompt="Open VS Code">
+              <span class="qa-icon">⟨/⟩</span>VS Code
+            </button>
+            <button class="qa-btn" data-prompt="Open WhatsApp">
+              <span class="qa-icon">◉</span>WhatsApp
+            </button>
+            <button class="qa-btn" data-prompt="Open Spotify">
+              <span class="qa-icon">♪</span>Spotify
+            </button>
+            <button class="qa-btn" data-prompt="Open GitHub in browser">
+              <span class="qa-icon">◈</span>GitHub
+            </button>
+            <button class="qa-btn" data-prompt="Open the Downloads folder">
+              <span class="qa-icon">↓</span>Downloads
+            </button>
+            <button class="qa-btn" data-prompt="Show me system info overview">
+              <span class="qa-icon">⊞</span>System Info
+            </button>
+            <button class="qa-btn" data-prompt="Open a terminal">
+              <span class="qa-icon">$</span>Terminal
+            </button>
+          </div>
+        </div>
+
+        <div class="sidebar-section sidebar-bottom">
+          <button id="clear-chat-btn">↺ Clear Chat</button>
+          <div class="sys-info-mini" id="sys-info-mini">
+            <span id="mini-os">—</span>
+            <span id="mini-user">—</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Chat Area -->
+      <main id="main">
+
+        <!-- Messages -->
+        <div id="messages" role="log" aria-live="polite">
+          <!-- Welcome screen -->
+          <div id="welcome" class="welcome-screen">
+            <div class="welcome-orb">
+              <div class="orb-ring r1"></div>
+              <div class="orb-ring r2"></div>
+              <div class="orb-ring r3"></div>
+              <div class="orb-core">
+                <span>AI</span>
+              </div>
+            </div>
+            <h1 class="welcome-title">Hello, I'm <em>ARIA</em></h1>
+            <p class="welcome-sub">Your personal AI agent — I can open apps, browse the web, manage files, and do much more on your computer.</p>
+            <div class="welcome-hints">
+              <span class="hint">"Open YouTube"</span>
+              <span class="hint">"Launch VS Code"</span>
+              <span class="hint">"Show my downloads"</span>
+              <span class="hint">"Create a note"</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Typing indicator -->
+        <div id="typing-indicator" class="hidden">
+          <div class="typing-avatar">A</div>
+          <div class="typing-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <span class="typing-label" id="typing-label">ARIA is thinking...</span>
+        </div>
+
+        <!-- Input bar -->
+        <div id="input-area">
+          <div id="input-wrapper">
+            <div class="input-glow"></div>
+            <textarea
+              id="input"
+              placeholder="Ask ARIA anything... open apps, search files, browse the web..."
+              rows="1"
+              autocomplete="off"
+              spellcheck="true"
+            ></textarea>
+            <button id="send-btn" title="Send (Enter)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </div>
+          <p class="input-hint">Press <kbd>Enter</kbd> to send · <kbd>Shift+Enter</kbd> for new line</p>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- No API key warning modal -->
+  <div id="api-modal" class="modal hidden">
+    <div class="modal-box">
+      <div class="modal-icon">⚠</div>
+      <h2>API Key Required</h2>
+      <p>Add your Anthropic API key to the <code>.env</code> file in the project root:</p>
+      <pre>ANTHROPIC_API_KEY=sk-ant-...</pre>
+      <p>Then restart ARIA.</p>
+      <button class="modal-close" onclick="document.getElementById('api-modal').classList.add('hidden')">Got it</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
